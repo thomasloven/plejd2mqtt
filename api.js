@@ -186,7 +186,7 @@ class PlejdApi extends EventEmitter {
         deviceNum = outputs[settings.output];
       }
 
-      // check if device is dimmable     
+      // check if device is dimmable
       const plejdDevice = this.site.plejdDevices.find(x => x.deviceId == deviceId);
       let { name, type, dimmable } = this._getDeviceType(plejdDevice.hardwareId);
 

@@ -2,7 +2,7 @@ const EventEmitter = require('events');
 const mqtt = require('mqtt');
 const _ = require('lodash');
 
-const startTopic = 'hass/status';
+const startTopic = 'homeassistant/status';
 
 // #region logging
 let debug = '';
@@ -116,13 +116,13 @@ class MqttClient extends EventEmitter {
 
     this.client.on('message', (topic, message) => {
       //const command = message.toString();
-      const command = message.toString().substring(0, 1) === '{' 
+      const command = message.toString().substring(0, 1) === '{'
         ? JSON.parse(message.toString())
         : message.toString();
 
-      if (topic === startTopic) {
+      if (topic === startTopic && message.toString() === "online") {
         logger('home assistant has started. lets do discovery.');
-        self.emit('connected');
+        setTimeout(() => self.emit('connected'), 2000);
       }
       else if (topic === getSettingsTopic()) {
         self.emit('settingsChanged', command);
@@ -180,10 +180,12 @@ class MqttClient extends EventEmitter {
         getConfigPath(device),
         JSON.stringify(payload)
       );
-      this.client.publish(
-        getAvailabilityTopic(device),
-        "online"
-      );
+      setTimeout(() => {
+        self.client.publish(
+          getAvailabilityTopic(device),
+          "online"
+        );
+      }, 2000);
     });
   }
 
